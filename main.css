@@ -83,3 +83,6 @@ button:hover {
     }
 }
 
+#none {
+    cursor: default;
+}
