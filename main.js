@@ -11,7 +11,6 @@ btnElements.forEach((btn) => {
     btn.addEventListener("click", (e) => {
         const value = e.target.innerText;
         var lastIndex = steps.length - 1;
-
         if (value === "C") {
             steps.push(value);
             screen.innerText = "0";
@@ -24,42 +23,90 @@ btnElements.forEach((btn) => {
                     steps[lastIndex] = value;
                     historyElement.innerText = screen.innerText.toString() + steps[lastIndex];
                 } else {
-                    var result = calculate(steps);
-                    console.log(result);
-                    steps = [];
-                    steps.push(result);
-                    steps.push(value);
-                    screen.innerText = result;
-                    historyElement.innerText = screen.innerText.toString() + value.toString();
+                    if (steps[lastIndex] == "=") {
+                        steps.splice(lastIndex, 1);
+                        historyElement.innerText = screen.innerText.toString() + value;
+                        steps.push(value);
+                        screen.innerText = steps[0];
+                    } else {
+                        var result = calculate(steps);
+                        steps = [];
+                        steps.push(result);
+                        steps.push(value);
+                        screen.innerText = result;
+                        historyElement.innerText = screen.innerText.toString() + value.toString();
+                    }
                 }
             } else {
                 if (value !== "=") {
-                    if (operators.includes(steps[lastIndex])) {
+                    if (steps[lastIndex] == "=") {
+                        steps.splice(lastIndex, 1);
                         screen.innerText = "";
-                        textInput = value;
+                        historyElement.innerText = "";
+                        steps = [];
                         steps.push(value);
-                        screen.innerText += textInput;
-                    } else {
-                        steps.push(value);
-                        screen.innerText = textInput;
                         screen.innerText += value;
-                        textInput += value;
+                    } else {
+                        if (operators.includes(steps[lastIndex])) {
+                            screen.innerText = "";
+                            textInput = value;
+                            steps.push(value);
+                            screen.innerText += textInput;
+                        } else {
+                            if (value == "0") {
+                                if (findDifferentZero(steps)) {
+                                    console.log(steps);
+                                    steps.push(value);
+                                    screen.innerText = textInput;
+                                    screen.innerText += value;
+                                    textInput += value;
+                                } else {
+                                    //do nothing
+                                }
+                            } else {
+                                steps.push(value);
+                                screen.innerText = textInput;
+                                screen.innerText += value;
+                                textInput += value;
+                            }
+                        }
                     }
                 } else {
                     var result = calculate(steps);
+                    // if(!checkOperator(steps, operators)) { //neu khong ton tai toan tu nao
+                    //     result =
+                    // }
                     if (result == "Error, cannot divide by zero") {
                         screen.innerText = result;
                         clear();
                     } else {
                         steps = [result];
+                        console.log(steps);
                         historyElement.innerText = "";
                         screen.innerText = result;
+                        textInput = "";
                     }
+                    steps.push(value);
                 }
             }
         }
     });
 });
+
+function findDifferentZero(steps) {
+    for (let i = 0; i < steps.length; i++) {
+        if (steps[i] !== "0") {
+            return true;
+        }
+    }
+    return false;
+}
+
+function checkOperator(steps, operators) {
+    steps.some((step) => {
+        return operators.includes(step);
+    });
+}
 
 function clear() {
     steps = ["0"];
@@ -72,12 +119,15 @@ function calculate(steps) {
     var temp = "";
     var operator = "";
     steps.forEach((step) => {
+        console.log(typeof step);
         if (operators.includes(step)) {
             operator = step;
             operands.push(temp);
             temp = "";
         } else {
-            temp += step;
+            if (step != "=") {
+                temp += step.toString();
+            }
         }
     });
     operands.push(temp);
