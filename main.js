@@ -4,7 +4,7 @@ var historyElement = document.querySelector(".history");
 console.log(historyElement);
 
 var textInput = "";
-var steps = ["0"];
+var steps = [];
 var operators = ["+", "-", "x", "/", "%"];
 
 btnElements.forEach((btn) => {
@@ -45,7 +45,8 @@ btnElements.forEach((btn) => {
                         historyElement.innerText = "";
                         steps = [];
                         steps.push(value);
-                        screen.innerText += value;
+                        textInput += value
+                        screen.innerText = textInput;
                     } else {
                         if (operators.includes(steps[lastIndex])) {
                             screen.innerText = "";
@@ -65,9 +66,8 @@ btnElements.forEach((btn) => {
                                 }
                             } else {
                                 steps.push(value);
-                                screen.innerText = textInput;
-                                screen.innerText += value;
                                 textInput += value;
+                                screen.innerText = textInput;
                             }
                         }
                     }
@@ -109,7 +109,7 @@ function checkOperator(steps, operators) {
 }
 
 function clear() {
-    steps = ["0"];
+    steps = [];
     textInput = "";
     historyElement.innerText = "";
 }
